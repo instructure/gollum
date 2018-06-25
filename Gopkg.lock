@@ -260,12 +260,14 @@
   branch = "master"
   name = "github.com/trivago/gollum"
   packages = [
+    "consumer",
     "contrib/native/kafka/librdkafka",
     "core",
     "core/components",
     "filter",
     "format",
     "logger",
+    "producer",
     "producer/awss3",
     "producer/file",
     "router"
@@ -367,6 +369,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "43a8b410a3afc4cca1466380a9bc7332672ca0dd48cc1ba6106ef2c24eb5f47d"
+  inputs-digest = "4a3d35aecc73cf7a72c4dc2c65389113e5508d2bab61c1a957e7781559ccab38"
   solver-name = "gps-cdcl"
   solver-version = 1
