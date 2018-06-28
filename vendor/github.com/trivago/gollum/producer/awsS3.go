@@ -85,8 +85,9 @@ type AwsS3 struct {
 	BatchConfig    components.BatchedWriterConfig `gollumdoc:"embed_type"`
 
 	// configurations
-	bucket          string `config:"Bucket" default:""`
-	fileNamePattern string `config:"File" default:"gollum_*.log"`
+	bucket            string `config:"Bucket" default:""`
+	fileNamePattern   string `config:"File" default:"gollum_*.log"`
+	prefixedTimestamp bool   `config:"PrefixedTimestamp" default:"false"`
 
 	// properties
 	filesByStream    map[core.MessageStreamID]*components.BatchedWriterAssembly
@@ -226,11 +227,15 @@ func (prod *AwsS3) getFinalFileName(baseFileName string) string {
 	fileExt := filepath.Ext(baseFileName)
 	fileName := baseFileName[:len(baseFileName)-len(fileExt)]
 
-	timestamp := strings.Replace(time.Now().Format(prod.Rotate.Timestamp), "-", "/", -1)
-	signature := fmt.Sprintf("%s/%s", timestamp, fileName)
+	timestamp := time.Now().Format(prod.Rotate.Timestamp)
+	signature := fmt.Sprintf("%s_%s", fileName, timestamp)
 
-	return fmt.Sprintf("%s%s", signature, fileExt)
-
+	if prod.prefixedTimestamp {
+		prefix := time.Now().Format("2006/01/02/15")
+		return fmt.Sprintf("%s/%s%s", prefix, signature, fileExt)
+	} else {
+		return fmt.Sprintf("%s%s", signature, fileExt)
+	}
 }
 
 func (prod *AwsS3) writeMessage(msg *core.Message) {
