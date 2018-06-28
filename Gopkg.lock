@@ -257,7 +257,7 @@
   version = "v1.0.4"
 
 [[projects]]
-  branch = "master"
+  branch = "split-by-timestamp"
   name = "github.com/trivago/gollum"
   packages = [
     "consumer",
@@ -272,7 +272,7 @@
     "producer/file",
     "router"
   ]
-  revision = "489b5e66d50a126b7495904339e5128371d0b476"
+  revision = "d1f4ac05b419926625f8d2ec10d8b00df20d104d"
   source = "github.com/instructure/gollum"
 
 [[projects]]
@@ -369,6 +369,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4a3d35aecc73cf7a72c4dc2c65389113e5508d2bab61c1a957e7781559ccab38"
+  inputs-digest = "925dcd9ad3913528e91f12145858ce289867211f5e0ff837dae23e018fc9b7d7"
   solver-name = "gps-cdcl"
   solver-version = 1

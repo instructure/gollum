@@ -226,8 +226,8 @@ func (prod *AwsS3) getFinalFileName(baseFileName string) string {
 	fileExt := filepath.Ext(baseFileName)
 	fileName := baseFileName[:len(baseFileName)-len(fileExt)]
 
-	timestamp := time.Now().Format(prod.Rotate.Timestamp)
-	signature := fmt.Sprintf("%s_%s", fileName, timestamp)
+	timestamp := strings.Replace(time.Now().Format(prod.Rotate.Timestamp), "-", "/", -1)
+	signature := fmt.Sprintf("%s/%s", timestamp, fileName)
 
 	return fmt.Sprintf("%s%s", signature, fileExt)
 

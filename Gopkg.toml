@@ -132,4 +132,4 @@
 [[override]]
   name = "github.com/trivago/gollum"
   source = "github.com/instructure/gollum"
-  branch = "master"
+  branch = "split-by-timestamp"
