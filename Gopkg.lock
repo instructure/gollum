@@ -272,7 +272,7 @@
     "producer/file",
     "router"
   ]
-  revision = "442c0b6cf669410ba46de148fd36022b2a9328ca"
+  revision = "9a1f791ac824d783da1250b974cbeefb6838cca7"
   source = "github.com/instructure/gollum"
 
 [[projects]]
