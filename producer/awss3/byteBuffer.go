@@ -34,7 +34,7 @@ type s3ByteBuffer struct {
 
 	// Used for compression.
 	gzipWriter *gzip.Writer
-	buffer     bytes.Buffer
+	buffer     *bytes.Buffer
 }
 
 func newS3ByteBuffer() *s3ByteBuffer {
@@ -52,7 +52,7 @@ func newCompressedS3ByteBuffer() *s3ByteBuffer {
 		position:   int64(0),
 		compress:   true,
 		gzipWriter: gzip.NewWriter(&buff),
-		buffer:     buff,
+		buffer:     &buff,
 	}
 }
 
