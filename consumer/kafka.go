@@ -321,7 +321,7 @@ func (cons *Kafka) Configure(conf core.PluginConfigReader) {
 	cons.config.Consumer.Fetch.Max = int32(conf.GetInt("MaxFetchSizeByte", 0))
 	cons.config.Consumer.Fetch.Default = int32(conf.GetInt("DefaultFetchSizeByte", 32768))
 	cons.config.Consumer.MaxWaitTime = time.Duration(conf.GetInt("FetchTimeoutMs", 250)) * time.Millisecond
-	cons.config.Consumer.MaxProcessingTime = time.Duration(conf.GetInt("MaxProcessingTime", 100)) * time.Millisecond
+	cons.config.Consumer.MaxProcessingTime = time.Duration(conf.GetInt("MaxProcessingTimeMs", 100)) * time.Millisecond
 
 	if cons.group != "" {
 		cons.offsetFile = "" // forcibly ignore this option
