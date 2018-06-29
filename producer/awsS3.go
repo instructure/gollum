@@ -189,7 +189,7 @@ func (prod *AwsS3) getBatchedFile(streamID core.MessageStreamID, forceRotate boo
 	}
 
 	// Update BatchedWriterAssembly writer
-	writer := awss3.NewBatchedFileWriter(prod.s3Client, prod.bucket, prod.getFinalFileName(baseFileName), prod.Logger)
+	writer := awss3.NewBatchedFileWriter(prod.s3Client, prod.bucket, prod.getFinalFileName(baseFileName, prod.Rotate.Compress), prod.Rotate.Compress, prod.Logger)
 	batchedFile.SetWriter(&writer)
 
 	return batchedFile, nil
@@ -223,8 +223,11 @@ func (prod *AwsS3) getBaseFileName(streamID core.MessageStreamID) string {
 }
 
 //todo: introduce padding functionality (get list from aws)
-func (prod *AwsS3) getFinalFileName(baseFileName string) string {
+func (prod *AwsS3) getFinalFileName(baseFileName string, compress bool) string {
 	fileExt := filepath.Ext(baseFileName)
+	if compress {
+		fileExt += ".gz"
+	}
 	fileName := baseFileName[:len(baseFileName)-len(fileExt)]
 
 	timestamp := time.Now().Format(prod.Rotate.Timestamp)
