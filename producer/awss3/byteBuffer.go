@@ -25,12 +25,13 @@ import (
 
 // s3ByteBuffer is a byte buffer used for s3 target objects
 type s3ByteBuffer struct {
+	position int64
+
 	// Whether or not to compress this buffer.
 	compress bool
 
 	// Used for no compression
-	bytes    []byte
-	position int64
+	bytes []byte
 
 	// Used for compression.
 	gzipWriter *gzip.Writer
@@ -80,10 +81,9 @@ func (buf *s3ByteBuffer) CloseAndDelete() error {
 
 func (buf *s3ByteBuffer) Read(p []byte) (n int, err error) {
 	if buf.compress {
-		n = copy(p, buf.buffer.Bytes()[buf.position:])
-		buf.position += int64(n)
-		if buf.position == int64(buf.buffer.Len()) {
-			return n, io.EOF
+		n, err = buf.buffer.Read(p)
+		if err != nil {
+			return 0, err
 		}
 		return n, nil
 	} else {
@@ -124,6 +124,20 @@ func (buf *s3ByteBuffer) Seek(offset int64, whence int) (int64, error) {
 		}
 		if position < 0 {
 			return 0, fmt.Errorf("S3Buffer bad seek result %d", position)
+		}
+		if position < buf.position {
+			var diff = buf.position - position
+			for diff > 0 {
+				buf.buffer.UnreadByte()
+				diff--
+			}
+		}
+		if position > buf.position {
+			var diff = position - buf.position
+			for diff > 0 {
+				buf.buffer.ReadByte()
+				diff++
+			}
 		}
 		buf.position = position
 		return position, nil
