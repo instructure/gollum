@@ -38,6 +38,7 @@ type BatchedFileWriter struct {
 	s3Bucket    string
 	s3SubFolder string
 	fileName    string
+	compress    bool
 	logger      logrus.FieldLogger
 
 	currentMultiPart int64               // current multipart count
@@ -51,7 +52,7 @@ type BatchedFileWriter struct {
 }
 
 // NewBatchedFileWriter returns a BatchedFileWriter instance
-func NewBatchedFileWriter(s3Client *s3.S3, bucket string, fileName string, logger logrus.FieldLogger) BatchedFileWriter {
+func NewBatchedFileWriter(s3Client *s3.S3, bucket string, fileName string, compress bool, logger logrus.FieldLogger) BatchedFileWriter {
 	var s3Bucket, s3SubFolder string
 
 	if strings.Contains(bucket, "/") {
@@ -68,6 +69,7 @@ func NewBatchedFileWriter(s3Client *s3.S3, bucket string, fileName string, logge
 		s3SubFolder: s3SubFolder,
 		fileName:    fileName,
 		logger:      logger,
+		compress:    compress,
 	}
 
 	batchedFileWriter.init()
@@ -79,7 +81,11 @@ func (w *BatchedFileWriter) init() {
 	w.totalSize = 0
 	w.currentMultiPart = 0
 	w.completedParts = []*s3.CompletedPart{}
-	w.activeBuffer = newS3ByteBuffer()
+	if w.compress {
+		w.activeBuffer = newCompressedS3ByteBuffer()
+	} else {
+		w.activeBuffer = newS3ByteBuffer()
+	}
 
 	w.createMultipartUpload()
 }
@@ -150,7 +156,11 @@ func (w *BatchedFileWriter) uploadPartInput() (err error) {
 
 	// get and reset active buffer
 	buffer := w.activeBuffer
-	w.activeBuffer = newS3ByteBuffer()
+	if w.compress {
+		w.activeBuffer = newCompressedS3ByteBuffer()
+	} else {
+		w.activeBuffer = newS3ByteBuffer()
+	}
 
 	input := &s3.UploadPartInput{
 		Body:       buffer,
