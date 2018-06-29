@@ -211,8 +211,9 @@ type Kafka struct {
 	persistTimeout      time.Duration `config:"PresistTimoutMs" default:"5000" metric:"ms"`
 	folderPermissions   os.FileMode   `config:"FolderPermissions" default:"0755"`
 	MaxPartitionID      int32
-	orderedRead         bool `config:"Ordered"`
-	hasToSetMetadata    bool `config:"SetMetadata" default:"false"`
+	orderedRead         bool          `config:"Ordered"`
+	hasToSetMetadata    bool          `config:"SetMetadata" default:"false"`
+	maxProcessingTime   time.Duration `config:"MaxProcessingTimeMs" default:"100" metric:"ms"`
 }
 
 func init() {
@@ -320,6 +321,7 @@ func (cons *Kafka) Configure(conf core.PluginConfigReader) {
 	cons.config.Consumer.Fetch.Max = int32(conf.GetInt("MaxFetchSizeByte", 0))
 	cons.config.Consumer.Fetch.Default = int32(conf.GetInt("DefaultFetchSizeByte", 32768))
 	cons.config.Consumer.MaxWaitTime = time.Duration(conf.GetInt("FetchTimeoutMs", 250)) * time.Millisecond
+	cons.config.Consumer.MaxProcessingTime = time.Duration(conf.GetInt("MaxProcessingTime", 100)) * time.Millisecond
 
 	if cons.group != "" {
 		cons.offsetFile = "" // forcibly ignore this option
